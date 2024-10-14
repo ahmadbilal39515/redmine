@@ -99,11 +99,19 @@ module RedmineApp
     # can change it (environments/ENV.rb would take precedence over it)
     config.log_level = Rails.env.production? ? :info : :debug
 
+    # config.session_store(
+    #   :cookie_store,
+    #   :key => '_redmine_session',
+    #   :path => config.relative_url_root || '/',
+    #   :same_site => :lax
+    # )
+
     config.session_store(
-      :cookie_store,
-      :key => '_redmine_session',
-      :path => config.relative_url_root || '/',
-      :same_site => :lax
+      :active_record_store,
+      key: '_redmine_session', # You can keep your session key the same
+      path: config.relative_url_root || '/',
+      same_site: :lax,
+      expire_after: 30.minutes
     )
 
     if File.exist?(File.join(File.dirname(__FILE__), 'additional_environment.rb'))

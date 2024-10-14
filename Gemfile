@@ -122,3 +122,8 @@ end
 Dir.glob File.expand_path("../plugins/*/{Gemfile,PluginGemfile}", __FILE__) do |file|
   eval_gemfile file
 end
+
+
+gem 'activerecord-session_store'
+
+gem 'whenever', require: false
