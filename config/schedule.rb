@@ -19,10 +19,7 @@ set :output, 'log/cron_log.log'
 
 # Learn more: http://github.com/javan/whenever
 
-# every 1.day, at: '4:30 am' do
-#   rake 'sessions:cleanup'
-# end
-
-every 1.minute do
+every 1.day, at: '4:30 am' do
   rake 'sessions:cleanup'
 end
+
