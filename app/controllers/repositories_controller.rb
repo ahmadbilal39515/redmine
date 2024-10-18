@@ -88,6 +88,7 @@ class RepositoriesController < ApplicationController
 
     @entries = @repository.entries(@path, @rev)
     @changeset = @repository.find_changeset_by_name(@rev)
+
     if request.xhr?
       @entries ? render(:partial => 'dir_list_content') : head(:ok)
     else

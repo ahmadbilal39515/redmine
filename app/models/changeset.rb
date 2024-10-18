@@ -236,9 +236,10 @@ class Changeset < ApplicationRecord
 
   # Updates the +issue+ according to +action+
   def fix_issue(issue, action)
-    # the issue may have been updated by the closure of another one (eg. duplicate)
+    # # the issue may have been updated by the closure of another one (eg. duplicate)
     issue.reload
-    # don't change the status is the issue is closed
+
+    # # don't change the status is the issue is closed
     return if issue.closed?
 
     journal = issue.init_journal(user || User.anonymous,
@@ -249,11 +250,16 @@ class Changeset < ApplicationRecord
       rule['keywords'].include?(action) &&
         (rule['if_tracker_id'].blank? || rule['if_tracker_id'] == issue.tracker_id.to_s)
     end
-    if rule
-      issue.assign_attributes rule.slice(*Issue.attribute_names)
-    end
-    Redmine::Hook.call_hook(:model_changeset_scan_commit_for_issue_ids_pre_issue_update,
+
+    return if repository.nil?
+    current_branch = repository.current_branch(repository.url)
+    if repository.default_branch == current_branch
+      if rule
+        issue.assign_attributes rule.slice(*Issue.attribute_names)
+      end
+      Redmine::Hook.call_hook(:model_changeset_scan_commit_for_issue_ids_pre_issue_update,
                             {:changeset => self, :issue => issue, :action => action})
+    end
 
     if issue.changes.any?
       unless issue.save

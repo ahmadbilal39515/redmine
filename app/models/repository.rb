@@ -356,6 +356,28 @@ class Repository < ApplicationRecord
     end
   end
 
+  def current_branch(repo_path)
+    heads_dir = File.join(repo_path, 'refs', 'heads')
+
+    # Get all branch references
+    branches = Dir.entries(heads_dir).reject { |f| f == '.' || f == '..' }
+
+    # If no branches are found, return nil
+    return nil if branches.empty?
+
+    # Find the most recently updated branch by checking the modification time of each branch ref
+    most_recent_branch = branches.max_by do |branch|
+      branch_ref_path = File.join(heads_dir, branch)
+      File.mtime(branch_ref_path)
+    end
+
+    most_recent_branch
+  rescue StandardError => e
+    # Log any errors and return nil
+    puts "Error fetching current branch in bare repository: #{e.message}"
+    nil
+  end
+
   # scan changeset comments to find related and fixed issues for all repositories
   def self.scan_changesets_for_issue_ids
     all.each(&:scan_changesets_for_issue_ids)
